@@ -2,9 +2,10 @@ import React from 'react';
 import axios from 'axios';
 import AgAutocomplete from 'react-algoliasearch'
 
+
 class Form extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       email: '',
       body: ''
@@ -13,6 +14,10 @@ class Form extends React.Component {
 
   handleEmail(event) {
     this.setState({ email: event.target.value });
+  }
+
+  handleAutocomplete(event, suggestion) {
+    this.setState({ email: suggestion.email });
   }
 
   handleBody(event) {
@@ -24,8 +29,18 @@ class Form extends React.Component {
     axios({
       method: 'post',
       url: 'http://example.org',
-      data: this.state
+      data: this.state,
+      transformRequest: obj => {
+        var str = [];
+        for (var p in obj)
+          str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        return str.join("&");
+      },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     });
+
   }
 
   render() {
@@ -38,11 +53,12 @@ class Form extends React.Component {
               apiKey={"c9d74d1b249831a64803caffb37a4e40"}
               appId={"X4CZOFIPYI"}
               displayKey="name"
-              index={"contacts"}
+              index={"ideals-people-energy"}
               inputId="input-search"
               otherProps={{
                 onChange: this.handleEmail.bind(this)
               }}
+              selected={this.handleAutocomplete.bind(this)}
               />
           </div>
           <div className="container">
